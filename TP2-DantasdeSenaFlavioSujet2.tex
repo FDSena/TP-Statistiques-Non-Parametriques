@@ -1,0 +1,117 @@
+\documentclass[a4paper,11pt]{article}
+\usepackage[utf8]{inputenc}    % encodage du fichier
+\usepackage[T1]{fontenc}       % bon encodage des caractères accentués
+\usepackage[french]{babel}     % adaptation aux règles françaises
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{geometry}
+\usepackage{caption}
+
+\geometry{margin=2.5cm}
+
+\title{TP - Statistiques Non Paramétriques \ \smallskip \large Sujet 2 \textendash{} Juin 2024}
+\author{DANTAS DE SENA FLAVIO \and DRIDI MOHAMED DHIA}
+\date{}
+
+\begin{document}
+
+\maketitle
+
+\section*{Exercice 1 : Minimum de lois exponentielles}
+
+\subsection*{Question 1 : Fonction de répartition empirique vs théorique}
+
+Nous avons généré un \textit{échantillon} de 20 valeurs suivant une loi exponentielle de paramètre $\lambda = 1$, à l'aide de la fonction \texttt{rexp(n = 20, rate = 1)} dans R. L'objectif est de comparer la fonction de répartition empirique obtenue avec \texttt{ecdf()} à la fonction de répartition théorique de la loi exponentielle.
+
+\begin{figure}[h!]
+\centering
+\includegraphics[width=0.7\textwidth]{img/exo1_q1_repartition.png}
+\caption{Fonction de répartition empirique (bleue) et théorique (rouge) de l'échantillon simulé}
+\end{figure}
+
+\noindent
+La courbe bleue correspond à la fonction de répartition empirique calculée à partir de l'échantillon, tandis que la courbe rouge représente la fonction de répartition théorique d'une loi exponentielle(1).
+
+\medskip
+
+On observe une bonne concordance globale entre les deux courbes. Les \textit{écarts} visibles sont dus à la taille limitée de l'échantillon ($n = 20$) et reflètent la variabilité aléatoire inhérente à toute simulation. Cela constitue une première vérification visuelle que notre \textit{échantillon} est conforme à la distribution attendue.
+
+\subsection*{Question 2 : Densité estimée vs densité théorique}
+
+Cette fois, nous comparons la densité estimée à l'aide de la fonction \texttt{density()} avec la densité théorique d'une loi exponentielle de paramètre $\lambda = 1$.
+
+\begin{figure}[h!]
+\centering
+\includegraphics[width=0.7\textwidth]{img/exo1_q2_densite.png}
+\caption{Densité estimée (bleue) et théorique (rouge) pour un \textit{échantillon} exponentiel}
+\end{figure}
+
+\noindent
+La densité estimée, bien que bruitée en raison de la taille de l'échantillon, suit globalement la forme de la densité exponentielle théorique. Cela suggère que l'échantillon est compatible avec une loi exponentielle.
+
+\subsection*{Question 3 : L'échantillon fourni est-il gaussien ?}
+
+On analyse ici un nouvel \textit{échantillon} de 20 valeurs. Nous superposons la densité estimée et la densité normale théorique, puis effectuons deux tests de normalité : Shapiro-Wilk et Anderson-Darling.
+
+\begin{figure}[h!]
+\centering
+\includegraphics[width=0.7\textwidth]{img/exo1_q3_gaussianite.png}
+\caption{Histogramme, densité estimée (bleue) et densité normale théorique (rouge)}
+\end{figure}
+
+\noindent
+\textbf{Test de Shapiro-Wilk} :
+\begin{itemize}
+\item $W = 0.852$
+\item $p$-value = 0.0058
+\end{itemize}
+
+\textbf{Test d'Anderson-Darling} :
+\begin{itemize}
+\item $A = 1.11$
+\item $p$-value = 0.0050
+\end{itemize}
+
+Les deux $p$-values sont inférieures à 0.05, ce qui signifie que l'on \textbf{rejette l'hypothèse de normalité}. L'échantillon fourni ne suit donc vraisemblablement pas une loi normale.
+
+\subsection*{Question 4 : Comparaison des deux \textit{samples}}
+
+Nous avons appliqué deux tests non paramétriques pour comparer l'échantillon n\textsuperscript{o}1 et l'échantillon n\textsuperscript{o}2 :
+
+\begin{itemize}
+\item \textbf{Kolmogorov-Smirnov} : $D = 0.25$, $p$-value = 0.5544
+\item \textbf{Wilcoxon} : $W = 165$, $p$-value = 0.3506
+\end{itemize}
+
+Dans les deux cas, les $p$-values \textit{étant largement supérieures à 0.05}, nous ne rejetons pas l'hypothèse que les deux \textit{échantillons} suivent la même distribution.
+
+\subsection*{Question 5 : Loi du minimum $Z = \min(X, Y)$}
+
+Sous l'hypothèse $H_0$ : $X \sim \text{Exp}(1)$ et $Y \sim \text{Exp}(1)$, donc $Z = \min(X, Y) \sim \text{Exp}(2)$. Nous comparons empiriquement $Z$ à cette loi.
+
+\begin{figure}[h!]
+\centering
+\includegraphics[width=0.7\textwidth]{img/exo1_q5_min_density.png}
+\caption{Densité estimée de $Z = \min(X, Y)$ (bleu) vs $\text{Exp}(2)$ (rouge)}
+\end{figure}
+
+\noindent
+\textbf{Test de Kolmogorov-Smirnov} entre $Z$ et $\text{Exp}(2)$ :
+\begin{itemize}
+\item $D = 0.14786$, $p$-value = 0.7744
+\end{itemize}
+
+La forte $p$-value indique que la loi de $Z$ est bien compatible avec une loi exponentielle de paramètre 2, ce qui conforte l'hypothèse $H_0$.
+
+\subsection*{Question 6 : Comparaison des deux lignes de l'échantillon fourni}
+
+On s'intéresse ici à la comparaison de la première ligne (10 valeurs) et de la seconde ligne (10 valeurs).
+
+\begin{itemize}
+\item \textbf{Kolmogorov-Smirnov} : $D = 0.3$, $p$-value = 0.7869
+\item \textbf{Wilcoxon} : $W = 60.5$, $p$-value = 0.4492
+\end{itemize}
+
+Les deux tests montrent qu'il n'y a pas de différence significative entre les deux lignes.
+
+\end{document}
