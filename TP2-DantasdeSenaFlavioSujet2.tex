@@ -1,15 +1,14 @@
 \documentclass[a4paper,11pt]{article}
-\usepackage[utf8]{inputenc}    % encodage du fichier
-\usepackage[T1]{fontenc}       % bon encodage des caractères accentués
-\usepackage[french]{babel}     % adaptation aux règles françaises
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[french]{babel}
+\usepackage{amsmath, amssymb}
 \usepackage{graphicx}
-\usepackage{amsmath}
-\usepackage{geometry}
+\usepackage{float}
 \usepackage{caption}
+\usepackage{hyperref}
 
-\geometry{margin=2.5cm}
-
-\title{TP - Statistiques Non Paramétriques \ \smallskip \large Sujet 2 \textendash{} Juin 2024}
+\title{TP - Statistiques Non Paramétriques \\ \smallskip \large Sujet 2 \textendash{} Juin 2024}
 \author{DANTAS DE SENA FLAVIO \and DRIDI MOHAMED DHIA}
 \date{}
 
@@ -17,101 +16,220 @@
 
 \maketitle
 
+\section*{Introduction}
+Ce compte rendu est réalisé dans le cadre de l’évaluation finale du module de Statistiques non paramétriques. Il s’agit d’un travail en binôme visant à mettre en application des méthodes d’analyse de données sans hypothèse paramétrique forte, à l’aide du logiciel R. On travaille sur le Sujet 2, qui explore les lois exponentielles, les tests de normalité et les estimations de densité. Toutes les questions ont été traitées avec soin, et chaque graphique a été interprété rigoureusement afin de justifier les conclusions statistiques. Ce rapport a pour objectif de démontrer non seulement la maîtrise technique des outils, mais aussi notre capacité à raisonner et interpréter de manière critique les résultats obtenus.
+
+\section*{Packages utilisés}
+Avant de commencer, nous avons chargé les packages nécessaires pour réaliser les analyses statistiques :
+\begin{itemize}
+    \item \texttt{tseries} : pour les séries temporelles et certains tests statistiques
+    \item \texttt{nortest} : pour effectuer des tests de normalité alternatifs comme Anderson-Darling
+    \item \texttt{lattice} : pour des graphiques avancés (peu utilisé ici)
+\end{itemize}
+
+
+\newpage
+
 \section*{Exercice 1 : Minimum de lois exponentielles}
 
-\subsection*{Question 1 : Fonction de répartition empirique vs théorique}
+\subsection*{Question 1 – Simulation et fonction de répartition}
+Nous avons généré un échantillon de 20 observations suivant une loi exponentielle de paramètre $\lambda = 1$ à l’aide de la commande R :
 
-Nous avons généré un \textit{échantillon} de 20 valeurs suivant une loi exponentielle de paramètre $\lambda = 1$, à l'aide de la fonction \texttt{rexp(n = 20, rate = 1)} dans R. L'objectif est de comparer la fonction de répartition empirique obtenue avec \texttt{ecdf()} à la fonction de répartition théorique de la loi exponentielle.
+\begin{verbatim}
+set.seed(123)
+echantillon1 <- rexp(n = 20, rate = 1)
+\end{verbatim}
 
-\begin{figure}[h!]
-\centering
-\includegraphics[width=0.7\textwidth]{img/exo1_q1_repartition.png}
-\caption{Fonction de répartition empirique (bleue) et théorique (rouge) de l'échantillon simulé}
+Nous avons ensuite tracé sa fonction de répartition empirique (en bleu) et la fonction de répartition théorique de la loi exponentielle(1) (en rouge). Cela permet de comparer visuellement si l’échantillon suit bien cette loi théorique.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.75\textwidth]{img/exo1_q1_repartition.png}
+    \caption{Fonction de répartition empirique vs théorique (loi exponentielle)}
 \end{figure}
 
-\noindent
-La courbe bleue correspond à la fonction de répartition empirique calculée à partir de l'échantillon, tandis que la courbe rouge représente la fonction de répartition théorique d'une loi exponentielle(1).
+\textbf{Interprétation :} La courbe empirique suit de très près la fonction théorique, ce qui confirme la bonne simulation de l’échantillon. Les petites fluctuations sont dues au caractère aléatoire des données, mais ne remettent pas en cause l’adéquation au modèle théorique.
 
-\medskip
+\subsection*{Question 2 – Densité estimée et densité théorique}
+Afin d’observer la distribution des valeurs de l’échantillon, nous avons comparé sa densité estimée (noyau gaussien par défaut) avec la densité théorique de la loi exponentielle(1).
 
-On observe une bonne concordance globale entre les deux courbes. Les \textit{écarts} visibles sont dus à la taille limitée de l'échantillon ($n = 20$) et reflètent la variabilité aléatoire inhérente à toute simulation. Cela constitue une première vérification visuelle que notre \textit{échantillon} est conforme à la distribution attendue.
-
-\subsection*{Question 2 : Densité estimée vs densité théorique}
-
-Cette fois, nous comparons la densité estimée à l'aide de la fonction \texttt{density()} avec la densité théorique d'une loi exponentielle de paramètre $\lambda = 1$.
-
-\begin{figure}[h!]
-\centering
-\includegraphics[width=0.7\textwidth]{img/exo1_q2_densite.png}
-\caption{Densité estimée (bleue) et théorique (rouge) pour un \textit{échantillon} exponentiel}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.75\textwidth]{img/exo1_q2_densite.png}
+    \caption{Densité estimée vs densité théorique (loi exponentielle)}
 \end{figure}
 
-\noindent
-La densité estimée, bien que bruitée en raison de la taille de l'échantillon, suit globalement la forme de la densité exponentielle théorique. Cela suggère que l'échantillon est compatible avec une loi exponentielle.
+\textbf{Interprétation :} La courbe de densité estimée en bleu est relativement proche de la courbe théorique rouge. On note quelques écarts, notamment dans la partie gauche de la distribution, dus au faible effectif (n=20). Cela est attendu dans les petites tailles d’échantillons, où l’estimation de la densité peut être instable. Malgré cela, la forme générale est bien respectée.
 
-\subsection*{Question 3 : L'échantillon fourni est-il gaussien ?}
+\vspace{1em}
+\subsection*{Question 3 – Vérification de la normalité d’un échantillon}
+On considère un second échantillon constitué des 20 valeurs suivantes :
 
-On analyse ici un nouvel \textit{échantillon} de 20 valeurs. Nous superposons la densité estimée et la densité normale théorique, puis effectuons deux tests de normalité : Shapiro-Wilk et Anderson-Darling.
+\begin{verbatim}
+1.86, 1.99, 0.43, 1.95, 2.09,
+1.81, 0.54, 0.62, 0.10, 0.13,
+0.79, 1.89, 0.13, 0.79, 0.04,
+0.04, 0.82, 2.00, 0.34, 1.10
+\end{verbatim}
 
-\begin{figure}[h!]
-\centering
-\includegraphics[width=0.7\textwidth]{img/exo1_q3_gaussianite.png}
-\caption{Histogramme, densité estimée (bleue) et densité normale théorique (rouge)}
+Nous avons tracé son histogramme, accompagné de sa densité estimée (bleu) ainsi que de la densité d’une loi normale ayant la même moyenne et le même écart-type (rouge).
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.75\textwidth]{img/exo1_q3_gaussianite.png}
+    \caption{Histogramme et densité estimée vs densité normale}
 \end{figure}
 
-\noindent
-\textbf{Test de Shapiro-Wilk} :
+Nous avons ensuite appliqué deux tests de normalité :
 \begin{itemize}
-\item $W = 0.852$
-\item $p$-value = 0.0058
+    \item \textbf{Test de Shapiro-Wilk} : p-valeur = 0.0058~$\Rightarrow$ rejet de l’hypothèse de normalité
+    \item \textbf{Test d’Anderson-Darling} : p-valeur = 0.0050~$\Rightarrow$ rejet également
 \end{itemize}
 
-\textbf{Test d'Anderson-Darling} :
+\textbf{Conclusion :} Bien que la densité estimée visuellement ne soit pas très éloignée d’une courbe normale, les deux tests statistiques indiquent clairement que cet échantillon ne suit pas une loi normale. Cela justifie l’usage de méthodes non paramétriques pour le comparer avec l’échantillon n°1.
+
+\subsection*{Question 4 – Comparaison des deux échantillons}
+Nous avons comparé l’échantillon 1 (simulation exponentielle) avec l’échantillon 2 ci-dessus. Deux tests non paramétriques ont été utilisés :
 \begin{itemize}
-\item $A = 1.11$
-\item $p$-value = 0.0050
+    \item \textbf{Test de Kolmogorov-Smirnov} : $p$-valeur = 0.5544
+    \item \textbf{Test de Wilcoxon} : $p$-valeur = 0.3506
 \end{itemize}
 
-Les deux $p$-values sont inférieures à 0.05, ce qui signifie que l'on \textbf{rejette l'hypothèse de normalité}. L'échantillon fourni ne suit donc vraisemblablement pas une loi normale.
+\textbf{Interprétation :} Ces deux tests ne permettent pas de rejeter l’hypothèse que les deux échantillons proviennent de la même loi de probabilité. Toutefois, cette conclusion doit être nuancée par le fait que l’échantillon 2 n’est pas normal, et que sa distribution semble asymétrique. La prudence est donc de mise dans l’interprétation : les tests sont non paramétriques, mais sensibles à la taille de l’échantillon et aux valeurs extrêmes.
 
-\subsection*{Question 4 : Comparaison des deux \textit{samples}}
+\textbf{Interprétation :} Ces deux tests ne permettent pas de rejeter l’hypothèse que les deux échantillons proviennent de la même loi de probabilité. Toutefois, cette conclusion doit être nuancée par le fait que l’échantillon 2 n’est pas normal, et que sa distribution semble asymétrique. La prudence est donc de mise dans l’interprétation : les tests sont non paramétriques, mais sensibles à la taille de l’échantillon et aux valeurs extrêmes.
 
-Nous avons appliqué deux tests non paramétriques pour comparer l'échantillon n\textsuperscript{o}1 et l'échantillon n\textsuperscript{o}2 :
+\subsection*{Question 5 – Distribution du minimum entre deux lois}
+On s’intéresse ici à la variable $Z = \min(X, Y)$, où $X$ et $Y$ sont les deux échantillons précédents. Si $X$ et $Y$ suivent tous deux une loi exponentielle de paramètre $\lambda = 1$, alors $Z$ suit une loi exponentielle de paramètre $2$ (car les lois exponentielles sont stables par minimum pour des variables indépendantes).
 
-\begin{itemize}
-\item \textbf{Kolmogorov-Smirnov} : $D = 0.25$, $p$-value = 0.5544
-\item \textbf{Wilcoxon} : $W = 165$, $p$-value = 0.3506
-\end{itemize}
-
-Dans les deux cas, les $p$-values \textit{étant largement supérieures à 0.05}, nous ne rejetons pas l'hypothèse que les deux \textit{échantillons} suivent la même distribution.
-
-\subsection*{Question 5 : Loi du minimum $Z = \min(X, Y)$}
-
-Sous l'hypothèse $H_0$ : $X \sim \text{Exp}(1)$ et $Y \sim \text{Exp}(1)$, donc $Z = \min(X, Y) \sim \text{Exp}(2)$. Nous comparons empiriquement $Z$ à cette loi.
-
-\begin{figure}[h!]
-\centering
-\includegraphics[width=0.7\textwidth]{img/exo1_q5_min_density.png}
-\caption{Densité estimée de $Z = \min(X, Y)$ (bleu) vs $\text{Exp}(2)$ (rouge)}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.75\textwidth]{img/exo1_q5_min_density.png}
+    \caption{Densité estimée de $Z = \min(X,Y)$ vs loi exponentielle(2)}
 \end{figure}
 
-\noindent
-\textbf{Test de Kolmogorov-Smirnov} entre $Z$ et $\text{Exp}(2)$ :
+Un test de Kolmogorov-Smirnov appliqué à $Z$ comparé à la loi exponentielle(2) donne :
 \begin{itemize}
-\item $D = 0.14786$, $p$-value = 0.7744
+    \item \textbf{Test KS} : $p$-valeur = 0.7744 \(\Rightarrow\) non-rejet de l’hypothèse nulle
 \end{itemize}
 
-La forte $p$-value indique que la loi de $Z$ est bien compatible avec une loi exponentielle de paramètre 2, ce qui conforte l'hypothèse $H_0$.
+\textbf{Conclusion :} Le comportement de $Z$ est cohérent avec une loi exponentielle(2), ce qui valide l’hypothèse de départ. Ce test est intéressant car il permet de vérifier indirectement l’homogénéité des deux échantillons sous un angle transformationnel.
 
-\subsection*{Question 6 : Comparaison des deux lignes de l'échantillon fourni}
-
-On s'intéresse ici à la comparaison de la première ligne (10 valeurs) et de la seconde ligne (10 valeurs).
+\subsection*{Question 6 – Comparaison des deux lignes du tableau}
+L’échantillon original de 20 valeurs est séparé en deux lignes de 10 observations :
 
 \begin{itemize}
-\item \textbf{Kolmogorov-Smirnov} : $D = 0.3$, $p$-value = 0.7869
-\item \textbf{Wilcoxon} : $W = 60.5$, $p$-value = 0.4492
+    \item Ligne 1 : 1.86, 1.99, 0.43, 1.95, 2.09, 1.81, 0.54, 0.62, 0.10, 0.13
+    \item Ligne 2 : 0.79, 1.89, 0.13, 0.79, 0.04, 0.04, 0.82, 2.00, 0.34, 1.10
 \end{itemize}
 
-Les deux tests montrent qu'il n'y a pas de différence significative entre les deux lignes.
+Les résultats des tests sont les suivants :
+\begin{itemize}
+    \item \textbf{Kolmogorov-Smirnov} : $p$-valeur = 0.7869
+    \item \textbf{Wilcoxon} : $p$-valeur = 0.4492
+\end{itemize}
+
+\textbf{Interprétation :} Ces deux lignes semblent provenir de la même distribution. Il n’y a pas de différences significatives détectées par les tests. Cette analyse nous permet de valider l’homogénéité interne de l’échantillon fourni.
+
+\newpage
+
+\section*{Exercice 2 : Une densité approchée}
+
+\subsection*{Question 1 – Intuition graphique}
+Nous reprenons ici l’échantillon utilisé dans l’Exercice 1, Question 3. Pour visualiser sa forme globale sans hypothèse préalable sur sa loi, nous avons tracé un histogramme en fréquence relative :
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.75\textwidth]{img/exo2_q1_histogramme.png}
+    \caption{Histogramme brut de l’échantillon 2}
+\end{figure}
+
+\textbf{Interprétation :} Le graphique révèle une distribution asymétrique, plutôt concentrée vers les faibles valeurs et avec une décroissance rapide. Cela laisse supposer une loi de type exponentielle ou une densité à asymétrie marquée. Aucun pic n’est clairement dominant, ce qui indique une absence de structure normale ou symétrique évidente.
+
+\subsection*{Question 2 – Estimation de la densité avec noyau Epanechnikov}
+Nous avons estimé la densité de l’échantillon à l’aide de la méthode des noyaux avec deux paramètres : le noyau Epanechnikov par défaut, et le même noyau avec une largeur de bande $bw = 0{,}2$.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.75\textwidth]{img/exo2_q2_epanechnikov_default.png}
+    \caption{Densité estimée avec noyau Epanechnikov (par défaut et $bw=0{,}2$)}
+\end{figure}
+
+\textbf{Analyse :} La courbe bleue (valeur par défaut) propose une estimation plus lissée tandis que la rouge (bw=0,2) fait apparaître davantage de détails. On note un compromis : une largeur de bande faible rend la courbe plus sensible aux fluctuations, tandis qu'une bande plus large lisse ces irrégularités. Le choix de $bw$ influe donc fortement sur la lecture de la distribution.
+
+\subsection*{Question 3 – Comparaison avec un noyau gaussien}
+Nous avons cette fois comparé les estimations de densité obtenues avec deux noyaux différents (Epanechnikov et Gaussien) en gardant une même largeur de bande ($bw = 0{,}2$).
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.75\textwidth]{img/exo2_q3_gaussian_bw02.png}
+    \caption{Comparaison des noyaux : Epanechnikov vs Gaussien (bw = 0{,}2)}
+\end{figure}
+
+\textbf{Observation :} Le noyau gaussien produit une courbe légèrement plus étalée et lissée que celle issue du noyau Epanechnikov. Cela est dû à la forme plus large et non bornée du noyau gaussien. En revanche, la structure générale de la distribution reste similaire dans les deux cas, validant la robustesse de l’estimation globale.
+
+\vspace{1em}
+
+\section*{Exercice 3 : Densité}
+
+\subsection*{Question 1 – Histogramme en fréquence relative}
+On s’intéresse ici à un nouvel échantillon de 20 valeurs, contenant des données positives et négatives :
+
+\begin{verbatim}
+-2.26, 2.08, -0.01, -2.04, -3.07, -4.52, 0.65, -0.67, -0.86, -0.22,
+0.52, 0.63, 2.69, 0.27, -0.55, 0.66, -0.06, -4.39, 0.15, -0.84
+\end{verbatim}
+
+Nous avons construit un histogramme en fréquence relative pour observer visuellement la répartition des données.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.75\textwidth]{img/exo3_q1_histogramme.png}
+    \caption{Histogramme en fréquence relative de l’échantillon 3}
+\end{figure}
+
+\textbf{Observation :} L’histogramme révèle une distribution centrée autour de 0, mais avec plusieurs valeurs extrêmes du côté négatif, ce qui laisse entrevoir une possible asymétrie ou une queue lourde. On pourrait suspecter une loi normale perturbée par quelques valeurs atypiques.
+
+\subsection*{Question 2 – Densité estimée par noyau}
+Nous avons ajouté au même graphique une estimation de la densité de probabilité par la méthode des noyaux :
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.75\textwidth]{img/exo3_q2_hist_density.png}
+    \caption{Histogramme + densité estimée (échantillon 3)}
+\end{figure}
+
+\textbf{Interprétation :} La densité obtenue suit globalement une forme unimodale, centrée, et lisse. Toutefois, elle présente quelques irrégularités à gauche, ce qui confirme les premières impressions d’un échantillon perturbé par des valeurs extrêmes négatives.
+
+\subsection*{Question 3 – Test de normalité de l’échantillon}
+Pour valider ou rejeter l’hypothèse de normalité, nous avons utilisé deux tests standards :
+
+\begin{itemize}
+    \item \textbf{Shapiro-Wilk} : $p$-valeur = 0.1581
+    \item \textbf{Anderson-Darling} : $p$-valeur = 0.0835
+\end{itemize}
+
+\textbf{Conclusion :} Les deux tests ne permettent pas de rejeter l’hypothèse de normalité à un seuil de 5\%. Cela suggère que malgré la présence de valeurs négatives marquées, la distribution de cet échantillon reste compatible avec une loi normale centrée.
+
+\subsection*{Question 4 – Somme avec une loi normale centrée réduite}
+Pour confirmer davantage la normalité, nous avons additionné à l’échantillon 20 réalisations d’une loi normale centrée réduite, en construisant une nouvelle variable $Z = X + N(0,1)$. L’objectif est de lisser les éventuelles irrégularités initiales.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.75\textwidth]{img/exo3_q4_somme_normale.png}
+    \caption{Histogramme et densité de $Z = X + N(0,1)$}
+\end{figure}
+
+\textbf{Analyse :} La forme obtenue est encore plus proche d’une cloche symétrique, avec un pic central bien défini et des queues douces. Ce lissage par convolution semble rendre la normalité encore plus plausible.
+
+\subsection*{Question 5 – Test de normalité sur $Z$}
+Nous avons à nouveau appliqué les tests de normalité :
+
+\begin{itemize}
+    \item \textbf{Shapiro-Wilk} : $p$-valeur = 0.3668
+    \item \textbf{Anderson-Darling} : $p$-valeur = 0.4587
+\end{itemize}
+
+\textbf{Conclusion :} Les résultats confirment que $Z$ peut raisonnablement être considéré comme suivant une loi normale. L’ajout d’un bruit gaussien a permis de consolider l’hypothèse de normalité, ce qui montre la pertinence de cette démarche dans une approche exploratoire.
 
 \end{document}
