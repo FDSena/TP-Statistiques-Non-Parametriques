@@ -217,10 +217,6 @@ dev.off()
 # Shapiro-Wilk
 shapiro.test(echantillon3)
 
-# Anderson-Darling
-if (!require(nortest)) install.packages("nortest")
-library(nortest)
-ad.test(echantillon3)
 
 #Question 4 : # Générer un échantillon normal centrée réduite
 set.seed(123)
@@ -244,6 +240,3 @@ dev.off()
 
 # Shapiro-Wilk
 shapiro.test(Z)
-
-# Anderson-Darling
-ad.test(Z)
