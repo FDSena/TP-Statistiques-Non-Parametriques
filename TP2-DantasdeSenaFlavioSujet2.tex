@@ -23,7 +23,7 @@ Ce compte rendu est réalisé dans le cadre de l’évaluation finale du module 
 Avant de commencer, nous avons chargé les packages nécessaires pour réaliser les analyses statistiques :
 \begin{itemize}
     \item \texttt{tseries} : pour les séries temporelles et certains tests statistiques
-    \item \texttt{nortest} : pour effectuer des tests de normalité alternatifs comme Anderson-Darling
+    \item \texttt{nortest} : pour effectuer des tests de normalité alternatifs
     \item \texttt{lattice} : pour des graphiques avancés (peu utilisé ici)
 \end{itemize}
 
@@ -83,7 +83,7 @@ Nous avons tracé son histogramme, accompagné de sa densité estimée (bleu) ai
 Nous avons ensuite appliqué deux tests de normalité :
 \begin{itemize}
     \item \textbf{Test de Shapiro-Wilk} : p-valeur = 0.0058~$\Rightarrow$ rejet de l’hypothèse de normalité
-    \item \textbf{Test d’Anderson-Darling} : p-valeur = 0.0050~$\Rightarrow$ rejet également
+    
 \end{itemize}
 
 \textbf{Conclusion :} Bien que la densité estimée visuellement ne soit pas très éloignée d’une courbe normale, les deux tests statistiques indiquent clairement que cet échantillon ne suit pas une loi normale. Cela justifie l’usage de méthodes non paramétriques pour le comparer avec l’échantillon n°1.
@@ -205,7 +205,6 @@ Pour valider ou rejeter l’hypothèse de normalité, nous avons utilisé deux t
 
 \begin{itemize}
     \item \textbf{Shapiro-Wilk} : $p$-valeur = 0.1581
-    \item \textbf{Anderson-Darling} : $p$-valeur = 0.0835
 \end{itemize}
 
 \textbf{Conclusion :} Les deux tests ne permettent pas de rejeter l’hypothèse de normalité à un seuil de 5\%. Cela suggère que malgré la présence de valeurs négatives marquées, la distribution de cet échantillon reste compatible avec une loi normale centrée.
@@ -226,7 +225,6 @@ Nous avons à nouveau appliqué les tests de normalité :
 
 \begin{itemize}
     \item \textbf{Shapiro-Wilk} : $p$-valeur = 0.3668
-    \item \textbf{Anderson-Darling} : $p$-valeur = 0.4587
 \end{itemize}
 
 \textbf{Conclusion :} Les résultats confirment que $Z$ peut raisonnablement être considéré comme suivant une loi normale. L’ajout d’un bruit gaussien a permis de consolider l’hypothèse de normalité, ce qui montre la pertinence de cette démarche dans une approche exploratoire.
